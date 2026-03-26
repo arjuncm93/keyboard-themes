@@ -14,7 +14,6 @@
       --accent: #7c6aff;
       --accent2: #ff6ab0;
       --accent3: #6affb4;
-      /* key width: 10 keys + 9 gaps of 3px, 8px side padding each side */
       --key-gap: 3px;
       --key-w: calc((100vw - 16px - 9 * var(--key-gap)) / 10);
       --key-h: calc(var(--key-w) * 1.7);
@@ -22,11 +21,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-    html, body {
-      height: 100%;
-      overflow: hidden;
-    }
+    html, body { height: 100%; overflow: hidden; }
 
     body {
       background: var(--bg);
@@ -36,7 +31,7 @@
       flex-direction: column;
     }
 
-    /* ── Scrollable top area ── */
+    /* ── Scrollable top ── */
     .top-area {
       flex: 1;
       overflow-y: auto;
@@ -54,7 +49,6 @@
       margin-bottom: 10px;
     }
 
-    /* ── Category label ── */
     .category-label {
       font-size: 0.6rem;
       text-transform: uppercase;
@@ -64,7 +58,6 @@
       padding-left: 2px;
     }
 
-    /* ── Compact style cards grid ── */
     .grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -83,14 +76,14 @@
       cursor: pointer;
       transition: border-color 0.15s, background 0.15s;
     }
-
     .card:active { background: #1f1f2e; }
-
     .card.active {
       border-color: var(--accent);
       background: #201e3a;
       box-shadow: 0 0 0 1px var(--accent), 0 0 10px 2px rgba(124,106,255,.2);
     }
+    .card[data-layer="light"].active  { border-color: var(--accent);  box-shadow: 0 0 0 1px var(--accent),  0 0 10px 2px rgba(124,106,255,.2); }
+    .card[data-layer="effect"].active { border-color: var(--accent2); box-shadow: 0 0 0 1px var(--accent2), 0 0 10px 2px rgba(255,106,176,.2); background: #2a1e2e; }
 
     .card-label {
       font-size: 0.58rem;
@@ -100,16 +93,15 @@
       text-align: center;
       line-height: 1;
     }
-
     .card.active .card-label { color: var(--accent); }
+    .card[data-layer="effect"].active .card-label { color: var(--accent2); }
 
-    /* ── Preview key ── */
+    /* ── Preview key in cards ── */
     .key {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
+      width: 36px; height: 36px;
       border-radius: 7px;
       font-size: 0.85rem;
       font-weight: 700;
@@ -122,38 +114,19 @@
       box-shadow: 0 3px 0 #13132a, 0 5px 10px rgba(0,0,0,0.5);
     }
 
-    /* ── Animations ── */
+    /* ── @keyframes ── */
     @keyframes press {
-      0%   { transform: translateY(0);                               box-shadow: 0 1px 0 1px #0a0a12; }
-      40%  { transform: translateY(calc(3px * var(--intensity)));    box-shadow: 0 0px 0 1px #0a0a12; }
-      100% { transform: translateY(0);                               box-shadow: 0 1px 0 1px #0a0a12; }
+      0%   { transform: translateY(0);                              box-shadow: 0 1px 0 1px #0a0a12; }
+      40%  { transform: translateY(calc(3px * var(--intensity)));   box-shadow: 0 0px 0 1px #0a0a12; }
+      100% { transform: translateY(0);                              box-shadow: 0 1px 0 1px #0a0a12; }
     }
-    .anim-press { animation: press 0.9s ease-in-out infinite; }
-
     @keyframes bounce {
-      0%, 100% { transform: translateY(0) scaleY(1); }
-      30%       { transform: translateY(calc(-12px * var(--intensity))) scaleY(calc(1 + 0.05 * var(--intensity))); }
-      55%       { transform: translateY(calc(3px  * var(--intensity))) scaleY(calc(1 - 0.06 * var(--intensity))); }
-      70%       { transform: translateY(calc(-5px * var(--intensity))) scaleY(calc(1 + 0.02 * var(--intensity))); }
-      85%       { transform: translateY(calc(1px  * var(--intensity))) scaleY(1); }
+      0%,100% { transform: translateY(0) scaleY(1); }
+      30%      { transform: translateY(calc(-12px * var(--intensity))) scaleY(calc(1 + 0.05 * var(--intensity))); }
+      55%      { transform: translateY(calc(3px   * var(--intensity))) scaleY(calc(1 - 0.06 * var(--intensity))); }
+      70%      { transform: translateY(calc(-5px  * var(--intensity))) scaleY(calc(1 + 0.02 * var(--intensity))); }
+      85%      { transform: translateY(calc(1px   * var(--intensity))) scaleY(1); }
     }
-    .anim-bounce { animation: bounce 1.4s cubic-bezier(.36,.07,.19,.97) infinite; }
-
-    @keyframes glow {
-      0%, 100% { box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(6px  * var(--intensity)) calc(2px * var(--intensity)) rgba(124,106,255,0.2); }
-      50%       { box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(18px * var(--intensity)) calc(6px * var(--intensity)) rgba(124,106,255,0.7), 0 0 calc(36px * var(--intensity)) calc(12px * var(--intensity)) rgba(124,106,255,0.25); }
-    }
-    .anim-glow { border-color: var(--accent); animation: glow 1.6s ease-in-out infinite; }
-
-    @keyframes rgb {
-      0%   { border-color: #ff4444; box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(10px * var(--intensity)) calc(3px * var(--intensity)) rgba(255,68,68,.6);   color: #ff8888; }
-      25%  { border-color: #ffcc00; box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(10px * var(--intensity)) calc(3px * var(--intensity)) rgba(255,204,0,.6);   color: #ffe066; }
-      50%  { border-color: #44ff88; box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(10px * var(--intensity)) calc(3px * var(--intensity)) rgba(68,255,136,.6);  color: #88ffbb; }
-      75%  { border-color: #44aaff; box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(10px * var(--intensity)) calc(3px * var(--intensity)) rgba(68,170,255,.6);  color: #88ccff; }
-      100% { border-color: #ff44aa; box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(10px * var(--intensity)) calc(3px * var(--intensity)) rgba(255,68,170,.6);  color: #ff88cc; }
-    }
-    .anim-rgb { animation: rgb 2.4s linear infinite; }
-
     @keyframes wobble {
       0%,100% { transform: rotate(0deg); }
       15%     { transform: rotate(calc(-8deg * var(--intensity))); }
@@ -162,15 +135,6 @@
       60%     { transform: rotate(calc( 4deg * var(--intensity))); }
       75%     { transform: rotate(calc(-2deg * var(--intensity))); }
     }
-    .anim-wobble { animation: wobble 1.2s ease-in-out infinite; }
-
-    @keyframes flip {
-      0%,100% { transform: rotateY(0deg); }
-      40%     { transform: rotateY(180deg); }
-      60%     { transform: rotateY(180deg); }
-    }
-    .anim-flip { animation: flip 2s ease-in-out infinite; }
-
     @keyframes shake {
       0%,100% { transform: translateX(0); }
       20%     { transform: translateX(calc(-5px * var(--intensity))); }
@@ -178,30 +142,26 @@
       60%     { transform: translateX(calc(-4px * var(--intensity))); }
       80%     { transform: translateX(calc( 4px * var(--intensity))); }
     }
-    .anim-shake { animation: shake 0.7s ease-in-out infinite; }
-
     @keyframes float {
-      0%,100% { transform: translateY(0); }
-      50%     { transform: translateY(calc(-9px * var(--intensity))); }
+      0%,100% { transform: translateY(0);                             box-shadow: 0 1px 0 1px #0a0a12; }
+      50%      { transform: translateY(calc(-9px * var(--intensity))); box-shadow: 0 5px 0 1px #0a0a12, 0 8px 20px rgba(0,0,0,.6); }
     }
-    .anim-float { animation: float 2s ease-in-out infinite; box-shadow: 0 4px 0 1px #0a0a12, 0 6px 16px rgba(0,0,0,.5); }
-
-    @keyframes ripple-ring {
-      0%   { opacity: 0.8; transform: scale(0.6); }
-      100% { opacity: 0;   transform: scale(calc(1.4 + 0.8 * var(--intensity))); }
+    @keyframes flip {
+      0%,100% { transform: rotateY(0deg); }
+      40%     { transform: rotateY(180deg); }
+      60%     { transform: rotateY(180deg); }
     }
-    .anim-ripple::before, .anim-ripple::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      border: 2px solid var(--accent2);
-      pointer-events: none;
-      animation: ripple-ring 0.65s ease-out infinite;
+    @keyframes glow {
+      0%,100% { box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(6px  * var(--intensity)) calc(2px * var(--intensity)) rgba(124,106,255,.2); }
+      50%      { box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(18px * var(--intensity)) calc(6px * var(--intensity)) rgba(124,106,255,.7), 0 0 calc(36px * var(--intensity)) calc(12px * var(--intensity)) rgba(124,106,255,.25); }
     }
-    .anim-ripple { border-color: var(--accent2); }
-    .anim-ripple::after { animation-delay: 0.325s; }
-
+    @keyframes rgb {
+      0%   { border-color: #ff4444; box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(10px * var(--intensity)) calc(3px * var(--intensity)) rgba(255,68,68,.6);   color: #ff8888; }
+      25%  { border-color: #ffcc00; box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(10px * var(--intensity)) calc(3px * var(--intensity)) rgba(255,204,0,.6);  color: #ffe066; }
+      50%  { border-color: #44ff88; box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(10px * var(--intensity)) calc(3px * var(--intensity)) rgba(68,255,136,.6); color: #88ffbb; }
+      75%  { border-color: #44aaff; box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(10px * var(--intensity)) calc(3px * var(--intensity)) rgba(68,170,255,.6); color: #88ccff; }
+      100% { border-color: #ff44aa; box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(10px * var(--intensity)) calc(3px * var(--intensity)) rgba(255,68,170,.6); color: #ff88cc; }
+    }
     @keyframes flicker {
       0%,19%,21%,23%,25%,54%,56%,100% {
         box-shadow: 0 1px 0 1px #0a0a12, 0 0 calc(8px * var(--intensity)) calc(2px * var(--intensity)) rgba(106,255,180,.7), 0 0 calc(24px * var(--intensity)) calc(6px * var(--intensity)) rgba(106,255,180,.3);
@@ -209,23 +169,36 @@
       }
       20%,24%,55% { box-shadow: 0 1px 0 1px #0a0a12; border-color: transparent; color: #c8c8e8; }
     }
-    .anim-flicker { animation: flicker 3s linear infinite; }
-
+    @keyframes ripple-ring {
+      0%   { opacity: 0.8; transform: scale(0.6); }
+      100% { opacity: 0;   transform: scale(calc(1.4 + 0.8 * var(--intensity))); }
+    }
     @keyframes pop {
       0%,100% { transform: scale(1); }
-      50%     { transform: scale(calc(1 + 0.22 * var(--intensity))); }
+      50%      { transform: scale(calc(1 + 0.22 * var(--intensity))); }
     }
-    .anim-pop { animation: pop 0.8s cubic-bezier(.36,.07,.19,.97) infinite; }
 
-    .key-type { font-family: monospace; }
-    .key-type .l1 { animation: fadecycle1 3s steps(1) infinite; position: absolute; }
-    .key-type .l2 { animation: fadecycle2 3s steps(1) infinite; position: absolute; }
-    .key-type .l3 { animation: fadecycle3 3s steps(1) infinite; position: absolute; }
-    @keyframes fadecycle1 { 0%,30%{opacity:1} 34%,100%{opacity:0} }
-    @keyframes fadecycle2 { 0%,33%{opacity:0} 34%,63%{opacity:1} 67%,100%{opacity:0} }
-    @keyframes fadecycle3 { 0%,66%{opacity:0} 67%,96%{opacity:1} 100%{opacity:0} }
+    /* ── Preview card key animations (.key, not .ikey) ── */
+    .anim-press    { animation: press    0.9s ease-in-out infinite; }
+    .anim-bounce   { animation: bounce   1.4s cubic-bezier(.36,.07,.19,.97) infinite; }
+    .anim-wobble   { animation: wobble   1.2s ease-in-out infinite; }
+    .anim-shake    { animation: shake    0.7s ease-in-out infinite; }
+    .anim-float    { animation: float    2.0s ease-in-out infinite; }
+    .anim-flip     { animation: flip     2.0s ease-in-out infinite; }
+    .anim-glow     { border-color: var(--accent); animation: glow 1.6s ease-in-out infinite; }
+    .anim-rgb      { animation: rgb      2.4s linear infinite; }
+    .anim-flicker  { animation: flicker  3.0s linear infinite; }
+    .anim-pop      { animation: pop      0.8s cubic-bezier(.36,.07,.19,.97) infinite; }
+    .anim-ripple   { border-color: var(--accent2); }
+    .anim-ripple::before, .anim-ripple::after {
+      content: ''; position: absolute; inset: 0;
+      border-radius: inherit; border: 2px solid var(--accent2);
+      pointer-events: none;
+      animation: ripple-ring 0.65s ease-out infinite;
+    }
+    .anim-ripple::after { animation-delay: 0.325s; }
 
-    /* ── Bottom keyboard panel (pinned) ── */
+    /* ── Keyboard panel ── */
     .keyboard-panel {
       flex-shrink: 0;
       background: #151519;
@@ -233,7 +206,6 @@
       padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
     }
 
-    /* Controls row: toggles + slider */
     .controls {
       display: flex;
       align-items: center;
@@ -243,204 +215,125 @@
     }
 
     .toggle-label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.65rem;
-      color: var(--muted);
-      cursor: pointer;
-      user-select: none;
-      transition: opacity 0.2s;
-      white-space: nowrap;
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.65rem; color: var(--muted);
+      cursor: pointer; user-select: none;
+      transition: opacity 0.2s; white-space: nowrap;
     }
     .toggle-label.dimmed { opacity: 0.35; pointer-events: none; }
-
     .toggle-track {
-      width: 28px; height: 16px;
-      border-radius: 999px;
-      background: var(--border);
-      position: relative;
-      transition: background 0.2s;
-      flex-shrink: 0;
+      width: 28px; height: 16px; border-radius: 999px;
+      background: var(--border); position: relative;
+      transition: background 0.2s; flex-shrink: 0;
     }
     .toggle-track.on { background: var(--accent); }
     .toggle-thumb {
-      position: absolute;
-      top: 2px; left: 2px;
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      background: #fff;
-      transition: transform 0.2s;
+      position: absolute; top: 2px; left: 2px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #fff; transition: transform 0.2s;
     }
     .toggle-track.on .toggle-thumb { transform: translateX(12px); }
 
     .slider-row {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      flex: 1;
-      min-width: 120px;
+      display: flex; align-items: center; gap: 7px;
+      flex: 1; min-width: 120px;
     }
     .slider-row label {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--muted);
-      white-space: nowrap;
+      font-size: 0.65rem; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--muted); white-space: nowrap;
     }
     .slider-row input[type=range] {
-      flex: 1;
-      -webkit-appearance: none;
-      appearance: none;
-      height: 3px;
-      border-radius: 2px;
-      background: var(--border);
-      outline: none;
-      cursor: pointer;
+      flex: 1; -webkit-appearance: none; appearance: none;
+      height: 3px; border-radius: 2px;
+      background: var(--border); outline: none; cursor: pointer;
     }
     .slider-row input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      background: var(--accent);
-      cursor: pointer;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--accent); cursor: pointer;
       box-shadow: 0 0 5px 2px rgba(124,106,255,.4);
     }
     .slider-row input[type=range]::-moz-range-thumb {
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      background: var(--accent);
-      border: none;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--accent); border: none;
     }
     .slider-val {
-      font-size: 0.65rem;
-      color: var(--accent);
-      min-width: 28px;
-      text-align: right;
+      font-size: 0.65rem; color: var(--accent);
+      min-width: 28px; text-align: right;
       font-variant-numeric: tabular-nums;
     }
 
-    /* Sound picker — same pill style, above style-picker */
+    /* ── Sound picker ── */
     .sound-picker {
-      display: flex;
-      gap: 5px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      margin-bottom: 6px;
-      padding-bottom: 2px;
+      display: flex; gap: 5px;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; margin-bottom: 6px;
     }
     .sound-picker::-webkit-scrollbar { display: none; }
 
-    /* Style pills — horizontal scroll */
-    .style-picker {
-      display: flex;
-      gap: 5px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      margin-bottom: 8px;
-      padding-bottom: 2px;
-    }
-    .style-picker::-webkit-scrollbar { display: none; }
-
     .style-pill {
-      flex-shrink: 0;
-      padding: 4px 11px;
-      border-radius: 999px;
-      font-size: 0.68rem;
-      font-weight: 600;
+      flex-shrink: 0; padding: 3px 9px; border-radius: 999px;
+      font-size: 0.64rem; font-weight: 600;
       border: 1.5px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      cursor: pointer;
-      min-height: 30px;
-      display: flex;
-      align-items: center;
+      background: transparent; color: var(--muted);
+      cursor: pointer; min-height: 26px;
+      display: flex; align-items: center;
       transition: border-color 0.12s, color 0.12s, background 0.12s;
     }
-    .style-pill.active {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: rgba(124,106,255,0.12);
-    }
-    .style-pill.none-pill.active {
-      border-color: var(--muted);
-      color: var(--text);
-      background: rgba(255,255,255,0.05);
-    }
 
-    /* Keyboard rows */
+    /* ── Keyboard rows ── */
     .kb-rows {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: var(--key-gap);
-      width: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; gap: var(--key-gap);
+      width: 100%; margin-top: 6px;
     }
-    .kb-row {
-      display: flex;
-      gap: var(--key-gap);
-      justify-content: center;
-    }
-    /* Space row fills full width */
+    .kb-row { display: flex; gap: var(--key-gap); justify-content: center; }
     .kb-row:last-child { width: calc(10 * var(--key-w) + 9 * var(--key-gap)); }
 
     .ikey {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: var(--key-w);
-      height: var(--key-h);
-      flex-shrink: 0;
-      padding: 0;
-      border-radius: 7px;
-      font-size: calc(var(--key-w) * 0.62);
-      font-weight: 500;
-      letter-spacing: 0;
-      cursor: pointer;
-      user-select: none;
-      position: relative;
-      overflow: visible;
-      z-index: 1;
-      background: #2c2c3a;
-      color: #e0e0f0;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: var(--key-w); height: var(--key-h);
+      flex-shrink: 0; padding: 0; border-radius: 7px;
+      font-size: calc(var(--key-w) * 0.62); font-weight: 500;
+      cursor: pointer; user-select: none;
+      position: relative; overflow: visible; z-index: 1;
+      background: #2c2c3a; color: #e0e0f0;
       border: 2px solid transparent;
       box-shadow: 0 1px 0 1px #0a0a12;
-      transition: transform 0.06s, box-shadow 0.06s, background 0.06s;
+      transition: background 0.06s;
       touch-action: manipulation;
     }
-
-    /* Row 2 (9 keys) and Row 3 (7 keys) are slightly wider per key */
     .ikey.space-key {
-      flex: 1;
-      width: auto;
-      font-size: calc(var(--key-w) * 0.3);
-      color: var(--muted);
+      flex: 1; width: auto;
+      font-size: calc(var(--key-w) * 0.3); color: var(--muted);
     }
-
-    .ikey.anim-ripple { z-index: 0; }
-
     .ikey.pressed {
       transform: translateY(1px) !important;
       box-shadow: 0 0 0 1px #0a0a12 !important;
       background: #3a3a4e !important;
     }
-
     @keyframes key-flash {
       0%   { background: #3a3a4e; box-shadow: 0 1px 0 1px #0a0a12, 0 0 12px 3px rgba(124,106,255,.5); }
       100% { background: #2c2c3a; box-shadow: 0 1px 0 1px #0a0a12; }
     }
     .ikey.flash { animation: key-flash 0.5s ease-out forwards !important; }
 
-    /* ── Post-ikey cascade fixes ──
-       These animation classes are defined before .ikey so .ikey's border/shadow wins.
-       Re-declare them here so they take effect on interactive keys. ── */
-    .ikey.anim-glow   { border-color: var(--accent); }
-    .ikey.anim-ripple { border-color: var(--accent2); }
-    .ikey.anim-float  { box-shadow: 0 4px 0 1px #0a0a12, 0 6px 16px rgba(0,0,0,.5); }
+    /* ── Layer visual overrides on .ikey ── */
+    /* Light layer needs border visible */
+    .ikey.ll-glow    { border-color: var(--accent); }
+    /* Effect layer */
+    .ikey.le-ripple  { border-color: var(--accent2); z-index: 0; }
+    .ikey.le-ripple::before, .ikey.le-ripple::after {
+      content: ''; position: absolute; inset: 0;
+      border-radius: inherit; border: 2px solid var(--accent2);
+      pointer-events: none;
+      animation: ripple-ring var(--ripple-dur, 0.65s) ease-out infinite;
+    }
+    .ikey.le-ripple::after {
+      animation-delay: calc(var(--ripple-dur, 0.65s) * 0.5);
+    }
 
-    /* ── Tablet (600px+) ── */
+    /* ── Responsive ── */
     @media (min-width: 600px) {
       :root {
         --key-gap: 4px;
@@ -450,13 +343,9 @@
       .top-area { padding: 18px 20px 12px; }
       h1 { font-size: 1.2rem; }
       .grid { grid-template-columns: repeat(6, 1fr); gap: 8px; }
-      .key { width: 40px; height: 40px; font-size: 0.95rem; }
-      .card-label { font-size: 0.62rem; }
       .keyboard-panel { padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
       .ikey { border-radius: 8px; }
     }
-
-    /* ── Desktop (960px+) ── */
     @media (min-width: 960px) {
       :root { --key-w: 46px; --key-h: 52px; --key-gap: 5px; }
       body { max-width: 520px; margin: 0 auto; }
@@ -474,71 +363,56 @@
 </head>
 <body>
 
-  <!-- Scrollable top: style cards -->
   <div class="top-area">
     <h1>Key Animations</h1>
 
     <div class="category-label">Motion</div>
-    <div class="grid" id="cardGrid">
-      <div class="card" data-anim="anim-press">
-        <div class="key anim-press">A</div>
-        <span class="card-label">Press</span>
+    <div class="grid">
+      <div class="card" data-layer="motion" data-anim="press">
+        <div class="key anim-press">A</div><span class="card-label">Press</span>
       </div>
-      <div class="card" data-anim="anim-bounce">
-        <div class="key anim-bounce">B</div>
-        <span class="card-label">Bounce</span>
+      <div class="card" data-layer="motion" data-anim="bounce">
+        <div class="key anim-bounce">B</div><span class="card-label">Bounce</span>
       </div>
-      <div class="card" data-anim="anim-wobble">
-        <div class="key anim-wobble">W</div>
-        <span class="card-label">Wobble</span>
+      <div class="card" data-layer="motion" data-anim="wobble">
+        <div class="key anim-wobble">W</div><span class="card-label">Wobble</span>
       </div>
-      <div class="card" data-anim="anim-shake">
-        <div class="key anim-shake">!</div>
-        <span class="card-label">Shake</span>
+      <div class="card" data-layer="motion" data-anim="shake">
+        <div class="key anim-shake">!</div><span class="card-label">Shake</span>
       </div>
-      <div class="card" data-anim="anim-float">
-        <div class="key anim-float">↑</div>
-        <span class="card-label">Float</span>
+      <div class="card" data-layer="motion" data-anim="float">
+        <div class="key anim-float">↑</div><span class="card-label">Float</span>
       </div>
-      <div class="card" data-anim="anim-flip">
-        <div class="key anim-flip">F</div>
-        <span class="card-label">Flip</span>
+      <div class="card" data-layer="motion" data-anim="flip">
+        <div class="key anim-flip">F</div><span class="card-label">Flip</span>
       </div>
     </div>
 
     <div class="category-label">Light</div>
     <div class="grid">
-      <div class="card" data-anim="anim-glow">
-        <div class="key anim-glow">G</div>
-        <span class="card-label">Glow</span>
+      <div class="card" data-layer="light" data-anim="glow">
+        <div class="key anim-glow">G</div><span class="card-label">Glow</span>
       </div>
-      <div class="card" data-anim="anim-rgb">
-        <div class="key anim-rgb">R</div>
-        <span class="card-label">RGB</span>
+      <div class="card" data-layer="light" data-anim="rgb">
+        <div class="key anim-rgb">R</div><span class="card-label">RGB</span>
       </div>
-      <div class="card" data-anim="anim-flicker">
-        <div class="key anim-flicker">N</div>
-        <span class="card-label">Flicker</span>
+      <div class="card" data-layer="light" data-anim="flicker">
+        <div class="key anim-flicker">N</div><span class="card-label">Flicker</span>
       </div>
     </div>
 
     <div class="category-label">Effect</div>
     <div class="grid">
-      <div class="card" data-anim="anim-ripple">
-        <div class="key anim-ripple" style="border-color:var(--accent2)">◎</div>
-        <span class="card-label">Ripple</span>
+      <div class="card" data-layer="effect" data-anim="ripple">
+        <div class="key anim-ripple">◎</div><span class="card-label">Ripple</span>
       </div>
-      <div class="card" data-anim="anim-pop">
-        <div class="key anim-pop">★</div>
-        <span class="card-label">Pop</span>
+      <div class="card" data-layer="effect" data-anim="pop">
+        <div class="key anim-pop">★</div><span class="card-label">Pop</span>
       </div>
     </div>
-
   </div>
 
-  <!-- Pinned bottom: keyboard -->
   <div class="keyboard-panel">
-
     <div class="controls">
       <label class="toggle-label" id="onPressToggle">
         <div class="toggle-track on" id="onPressTrack"><div class="toggle-thumb"></div></div>
@@ -565,43 +439,52 @@
     </div>
 
     <div class="sound-picker" id="soundPicker"></div>
-    <div class="style-picker" id="stylePicker"></div>
-    <div class="kb-rows" id="kbRows"></div>
 
+    <div class="kb-rows" id="kbRows"></div>
   </div>
 
   <script>
-    const STYLES = [
-      { id: 'none',         label: 'None' },
-      { id: 'anim-press',   label: 'Press' },
-      { id: 'anim-bounce',  label: 'Bounce' },
-      { id: 'anim-glow',    label: 'Glow' },
-      { id: 'anim-rgb',     label: 'RGB' },
-      { id: 'anim-wobble',  label: 'Wobble' },
-      { id: 'anim-flip',    label: 'Flip' },
-      { id: 'anim-shake',   label: 'Shake' },
-      { id: 'anim-float',   label: 'Float' },
-      { id: 'anim-ripple',  label: 'Ripple' },
-      { id: 'anim-flicker', label: 'Flicker' },
-      { id: 'anim-pop',     label: 'Pop' },
-    ];
-
-    const ALL_ANIM_CLASSES = STYLES.filter(s => s.id !== 'none').map(s => s.id);
-
-    const ROWS = [
-      ['Q','W','E','R','T','Y','U','I','O','P'],
-      ['A','S','D','F','G','H','J','K','L'],
-      ['Z','X','C','V','B','N','M'],
-      ['Space'],
-    ];
-
-    const BASE_DUR = {
-      'anim-press':0.9,'anim-bounce':1.4,'anim-glow':1.6,'anim-rgb':2.4,
-      'anim-wobble':1.2,'anim-flip':2.0,'anim-shake':0.7,'anim-float':2.0,
-      'anim-ripple':0.65,'anim-flicker':3.0,'anim-pop':0.8,
+    // ─────────────────────────────────────────
+    //  Animation token registry
+    // ─────────────────────────────────────────
+    const ANIM_TOKENS = {
+      // Motion layer — transform-driven
+      press:   { kf: 'press',   dur: 0.9,  ease: 'ease-in-out',                  layer: 'motion' },
+      bounce:  { kf: 'bounce',  dur: 1.4,  ease: 'cubic-bezier(.36,.07,.19,.97)', layer: 'motion' },
+      wobble:  { kf: 'wobble',  dur: 1.2,  ease: 'ease-in-out',                  layer: 'motion' },
+      shake:   { kf: 'shake',   dur: 0.7,  ease: 'ease-in-out',                  layer: 'motion' },
+      float:   { kf: 'float',   dur: 2.0,  ease: 'ease-in-out',                  layer: 'motion' },
+      flip:    { kf: 'flip',    dur: 2.0,  ease: 'ease-in-out',                  layer: 'motion' },
+      // Light layer — shadow/color-driven (listed after motion so shadow wins)
+      glow:    { kf: 'glow',    dur: 1.6,  ease: 'ease-in-out',                  layer: 'light'  },
+      rgb:     { kf: 'rgb',     dur: 2.4,  ease: 'linear',                        layer: 'light'  },
+      flicker: { kf: 'flicker', dur: 3.0,  ease: 'linear',                        layer: 'light'  },
+      // Effect layer — pseudo-element or scale
+      pop:     { kf: 'pop',     dur: 0.8,  ease: 'cubic-bezier(.36,.07,.19,.97)', layer: 'effect' },
+      ripple:  { kf: null,      dur: 0.65, ease: 'ease-out',                       layer: 'effect', pseudo: true },
     };
 
-    let currentStyle   = 'none';
+    const LAYERS = {
+      motion: ['press','bounce','wobble','shake','float','flip'],
+      light:  ['glow','rgb','flicker'],
+      effect: ['ripple','pop'],
+    };
+
+    // All layer CSS class names for cleanup
+    const ALL_LAYER_CLASSES = Object.keys(ANIM_TOKENS).map(id => {
+      const prefix = { motion:'lm', light:'ll', effect:'le' }[ANIM_TOKENS[id].layer];
+      return `${prefix}-${id}`;
+    });
+
+    function layerClass(animId) {
+      const prefix = { motion:'lm', light:'ll', effect:'le' }[ANIM_TOKENS[animId].layer];
+      return `${prefix}-${animId}`;
+    }
+
+    // ─────────────────────────────────────────
+    //  State
+    // ─────────────────────────────────────────
+    const layers       = { motion: null, light: null, effect: null };
     let staggerEnabled = true;
     let onPressOnly    = true;
     let speedMult      = 1;
@@ -610,7 +493,186 @@
     let audioCtx       = null;
     const pendingStop  = new WeakMap();
 
-    // ── Audio ──
+    function hasActiveLayers() {
+      return Object.values(layers).some(Boolean);
+    }
+
+    // ─────────────────────────────────────────
+    //  Composition engine
+    // ─────────────────────────────────────────
+    function buildAnimationStyle(staggerIdx) {
+      const parts = [];
+      // Order: motion → light → effect (light shadow overrides motion shadow)
+      for (const layerName of ['motion','light','effect']) {
+        const animId = layers[layerName];
+        if (!animId) continue;
+        const tok = ANIM_TOKENS[animId];
+        if (tok.pseudo) continue;
+        const dur   = (tok.dur / speedMult).toFixed(3) + 's';
+        const delay = (staggerIdx != null && staggerEnabled)
+          ? (staggerIdx * 0.06 / speedMult).toFixed(3) + 's'
+          : '0s';
+        parts.push(`${tok.kf} ${dur} ${tok.ease} ${delay} infinite`);
+      }
+      return parts.join(', ');
+    }
+
+    function clearKeyLayers(el) {
+      for (const cls of ALL_LAYER_CLASSES) el.classList.remove(cls);
+      el.style.animation = '';
+      el.style.removeProperty('--ripple-dur');
+    }
+
+    function applyLayersToKey(el, staggerIdx) {
+      for (const [layerName, animId] of Object.entries(layers)) {
+        if (!animId) continue;
+        const tok = ANIM_TOKENS[animId];
+        el.classList.add(layerClass(animId));
+        if (tok.pseudo) {
+          el.style.setProperty('--ripple-dur', (tok.dur / speedMult).toFixed(3) + 's');
+        }
+      }
+      const anim = buildAnimationStyle(staggerIdx);
+      if (anim) el.style.animation = anim;
+    }
+
+    function applyStyleToKeys() {
+      document.querySelectorAll('.ikey').forEach(el => {
+        clearKeyLayers(el);
+        if (onPressOnly || !hasActiveLayers()) return;
+        applyLayersToKey(el, parseInt(el.dataset.index));
+      });
+    }
+
+    // ─────────────────────────────────────────
+    //  Layer selection
+    // ─────────────────────────────────────────
+    function selectLayer(layerName, animId) {
+      layers[layerName] = animId === 'none' ? null : animId;
+      const effectiveId = layers[layerName];
+      // Update cards
+      document.querySelectorAll(`.card[data-layer="${layerName}"]`).forEach(c =>
+        c.classList.toggle('active', c.dataset.anim === effectiveId)
+      );
+      applyStyleToKeys();
+    }
+
+    // Card clicks — toggle per layer
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', () => {
+        const layerName = card.dataset.layer;
+        const animId    = card.dataset.anim;
+        const newId = layers[layerName] === animId ? 'none' : animId;
+        selectLayer(layerName, newId);
+      });
+    });
+
+    // ─────────────────────────────────────────
+    //  Keyboard
+    // ─────────────────────────────────────────
+    const ROWS = [
+      ['Q','W','E','R','T','Y','U','I','O','P'],
+      ['A','S','D','F','G','H','J','K','L'],
+      ['Z','X','C','V','B','N','M'],
+      ['Space'],
+    ];
+
+    const kbRows = document.getElementById('kbRows');
+    let keyIndex = 0;
+    ROWS.forEach(row => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'kb-row';
+      row.forEach(k => {
+        const el = document.createElement('button');
+        el.className   = 'ikey' + (k === 'Space' ? ' space-key' : '');
+        el.textContent = k === 'Space' ? '⎵' : k.toLowerCase();
+        el.dataset.key   = k;
+        el.dataset.index = keyIndex++;
+        el.addEventListener('mousedown',   () => onKeyDown(el));
+        el.addEventListener('mouseup',     () => onKeyUp(el));
+        el.addEventListener('mouseleave',  () => onKeyUp(el));
+        el.addEventListener('touchstart',  e => { e.preventDefault(); onKeyDown(el); }, { passive: false });
+        el.addEventListener('touchend',    e => { e.preventDefault(); onKeyUp(el);   }, { passive: false });
+        el.addEventListener('touchcancel', () => onKeyUp(el));
+        rowEl.appendChild(el);
+      });
+      kbRows.appendChild(rowEl);
+    });
+
+    function onKeyDown(el) {
+      if (navigator.vibrate) navigator.vibrate(8);
+      playClick();
+
+      if (onPressOnly && hasActiveLayers()) {
+        if (pendingStop.has(el)) {
+          el.removeEventListener('animationiteration', pendingStop.get(el));
+          pendingStop.delete(el);
+        }
+        clearKeyLayers(el);
+        void el.offsetWidth;
+        applyLayersToKey(el, null);
+      } else {
+        el.classList.add('pressed');
+        if (!hasActiveLayers()) {
+          el.classList.remove('flash');
+          void el.offsetWidth;
+          el.classList.add('flash');
+          el.addEventListener('animationend', () => el.classList.remove('flash'), { once: true });
+        }
+      }
+    }
+
+    function onKeyUp(el) {
+      el.classList.remove('pressed');
+      if (onPressOnly && hasActiveLayers()) {
+        const handler = () => {
+          clearKeyLayers(el);
+          pendingStop.delete(el);
+        };
+        pendingStop.set(el, handler);
+        el.addEventListener('animationiteration', handler, { once: true });
+      }
+    }
+
+    // ─────────────────────────────────────────
+    //  Toggles
+    // ─────────────────────────────────────────
+    const onPressTrack  = document.getElementById('onPressTrack');
+    const staggerToggle = document.getElementById('staggerToggle');
+    document.getElementById('onPressToggle').addEventListener('click', () => {
+      onPressOnly = !onPressOnly;
+      onPressTrack.classList.toggle('on', onPressOnly);
+      staggerToggle.classList.toggle('dimmed', onPressOnly);
+      applyStyleToKeys();
+    });
+
+    const staggerTrack = document.getElementById('staggerTrack');
+    document.getElementById('staggerToggle').addEventListener('click', () => {
+      staggerEnabled = !staggerEnabled;
+      staggerTrack.classList.toggle('on', staggerEnabled);
+      applyStyleToKeys();
+    });
+
+    // ─────────────────────────────────────────
+    //  Sliders
+    // ─────────────────────────────────────────
+    function fmtMult(m) { return m.toFixed(2).replace(/\.?0+$/, '') + '×'; }
+
+    document.getElementById('speedSlider').addEventListener('input', function() {
+      speedMult = this.value / 100;
+      document.getElementById('speedVal').textContent = fmtMult(speedMult);
+      applyStyleToKeys();
+    });
+
+    document.getElementById('intensitySlider').addEventListener('input', function() {
+      const v = this.value / 100;
+      document.documentElement.style.setProperty('--intensity', v);
+      document.getElementById('intensityVal').textContent = fmtMult(v);
+    });
+
+    // ─────────────────────────────────────────
+    //  Sound
+    // ─────────────────────────────────────────
     const SOUNDS = [
       { id: 'mechanical', label: 'Mechanical' },
       { id: 'soft',       label: 'Soft' },
@@ -620,6 +682,27 @@
     ];
     let currentSound = 'mechanical';
 
+    const soundPicker = document.getElementById('soundPicker');
+    SOUNDS.forEach(s => {
+      const pill = document.createElement('button');
+      pill.className   = 'style-pill' + (s.id === currentSound ? ' active' : '');
+      pill.textContent = s.label;
+      pill.dataset.sound = s.id;
+      pill.addEventListener('click', () => {
+        currentSound = s.id;
+        soundPicker.querySelectorAll('.style-pill').forEach(p =>
+          p.classList.toggle('active', p.dataset.sound === s.id));
+        if (soundEnabled) playClick();
+      });
+      soundPicker.appendChild(pill);
+    });
+
+    const soundTrack = document.getElementById('soundTrack');
+    document.getElementById('soundToggle').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundTrack.classList.toggle('on', soundEnabled);
+    });
+
     function playClick() {
       if (!soundEnabled) return;
       try {
@@ -627,36 +710,21 @@
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const t = audioCtx.currentTime;
         const v = soundVolume;
-
         if (currentSound === 'mechanical') {
-          // Crisp noise burst + low thud
-          const noise = makeNoise(0.03, 3200, 0.7, v * 0.4, t);
-          const osc   = makeOsc('sine', 180, 80, 0.025, v * 0.18, 0.03, t);
-          connect(noise, t, 0.035); connect(osc, t, 0.035);
-
+          connect(makeNoise(0.03, 3200, 0.7, v * 0.4, t));
+          connect(makeOsc('sine', 180, 80, 0.025, v * 0.18, 0.03, t));
         } else if (currentSound === 'soft') {
-          // Quiet muted tap — low freq, fast decay
-          const noise = makeNoise(0.025, 900, 1.2, v * 0.25, t);
-          const osc   = makeOsc('sine', 120, 60, 0.02, v * 0.12, 0.025, t);
-          connect(noise, t, 0.03); connect(osc, t, 0.03);
-
+          connect(makeNoise(0.025, 900, 1.2, v * 0.25, t));
+          connect(makeOsc('sine', 120, 60, 0.02, v * 0.12, 0.025, t));
         } else if (currentSound === 'typewriter') {
-          // Sharp metallic snap
-          const noise = makeNoise(0.04, 5000, 0.4, v * 0.5, t);
-          const osc   = makeOsc('square', 300, 150, 0.015, v * 0.08, 0.02, t);
-          connect(noise, t, 0.045); connect(osc, t, 0.02);
-
+          connect(makeNoise(0.04, 5000, 0.4, v * 0.5, t));
+          connect(makeOsc('square', 300, 150, 0.015, v * 0.08, 0.02, t));
         } else if (currentSound === 'clack') {
-          // Deep clack — heavy low body
-          const noise = makeNoise(0.035, 1800, 0.8, v * 0.35, t);
-          const osc   = makeOsc('sine', 90, 40, 0.04, v * 0.28, 0.05, t);
-          connect(noise, t, 0.04); connect(osc, t, 0.06);
-
+          connect(makeNoise(0.035, 1800, 0.8, v * 0.35, t));
+          connect(makeOsc('sine', 90, 40, 0.04, v * 0.28, 0.05, t));
         } else if (currentSound === 'pop') {
-          // Bubbly pop
-          const osc = makeOsc('sine', 500, 80, 0.04, v * 0.3, 0.06, t);
-          const osc2 = makeOsc('sine', 900, 200, 0.02, v * 0.1, 0.04, t);
-          connect(osc, t, 0.07); connect(osc2, t, 0.05);
+          connect(makeOsc('sine', 500, 80, 0.04, v * 0.3, 0.06, t));
+          connect(makeOsc('sine', 900, 200, 0.02, v * 0.1, 0.04, t));
         }
       } catch(e) {}
     }
@@ -691,188 +759,22 @@
       return g;
     }
 
-    function connect(node, t, dur) {
-      node.connect(audioCtx.destination);
-    }
+    function connect(node) { node.connect(audioCtx.destination); }
 
-    // ── Pills ──
-    const picker = document.getElementById('stylePicker');
-    STYLES.forEach(s => {
-      const pill = document.createElement('button');
-      pill.className = 'style-pill' + (s.id === 'none' ? ' none-pill active' : '');
-      pill.textContent = s.label;
-      pill.dataset.style = s.id;
-      pill.addEventListener('click', () => selectStyle(s.id));
-      picker.appendChild(pill);
-    });
-
-    // ── Keyboard ──
-    const kbRows = document.getElementById('kbRows');
-    let keyIndex = 0;
-    ROWS.forEach((row, rowIdx) => {
-      const rowEl = document.createElement('div');
-      rowEl.className = 'kb-row';
-      row.forEach(k => {
-        const el = document.createElement('button');
-        el.className = 'ikey' + (k === 'Space' ? ' space-key' : '');
-        el.textContent = k === 'Space' ? '⎵' : k.toLowerCase();
-        el.dataset.key = k;
-        el.dataset.index = keyIndex++;
-        el.addEventListener('mousedown', () => onKeyDown(el));
-        el.addEventListener('mouseup',   () => onKeyUp(el));
-        el.addEventListener('mouseleave',() => onKeyUp(el));
-        el.addEventListener('touchstart', e => { e.preventDefault(); onKeyDown(el); }, { passive: false });
-        el.addEventListener('touchend',   e => { e.preventDefault(); onKeyUp(el); },   { passive: false });
-        el.addEventListener('touchcancel',() => onKeyUp(el));
-        rowEl.appendChild(el);
-      });
-      kbRows.appendChild(rowEl);
-    });
-
-    // ── Helpers ──
-    function setKeyAnimStyle(el, animClass, staggerIdx) {
-      el.style.animationDuration = '';
-      el.style.animationDelay    = '';
-      if (!animClass || animClass === 'none') return;
-      el.style.animationDuration = ((BASE_DUR[animClass] ?? 1) / speedMult).toFixed(3) + 's';
-      if (staggerIdx != null && staggerEnabled)
-        el.style.animationDelay = (staggerIdx * 0.06 / speedMult).toFixed(3) + 's';
-    }
-
-    function applyStyleToKeys() {
-      document.querySelectorAll('.ikey').forEach(el => {
-        ALL_ANIM_CLASSES.forEach(c => el.classList.remove(c));
-        el.style.animationDuration = '';
-        el.style.animationDelay    = '';
-        if (onPressOnly || currentStyle === 'none') return;
-        el.classList.add(currentStyle);
-        setKeyAnimStyle(el, currentStyle, parseInt(el.dataset.index));
-      });
-    }
-
-    function selectStyle(styleId) {
-      currentStyle = styleId;
-      picker.querySelectorAll('.style-pill').forEach(p =>
-        p.classList.toggle('active', p.dataset.style === styleId));
-      document.querySelectorAll('.card').forEach(c =>
-        c.classList.toggle('active', c.dataset.anim === styleId));
-      applyStyleToKeys();
-    }
-
-    function onKeyDown(el) {
-      if (navigator.vibrate) navigator.vibrate(8);
-      playClick();
-      if (onPressOnly && currentStyle !== 'none') {
-        if (pendingStop.has(el)) {
-          el.removeEventListener('animationiteration', pendingStop.get(el));
-          pendingStop.delete(el);
-        }
-        ALL_ANIM_CLASSES.forEach(c => el.classList.remove(c));
-        void el.offsetWidth;
-        el.classList.add(currentStyle);
-        setKeyAnimStyle(el, currentStyle, null);
-      } else {
-        el.classList.add('pressed');
-        if (currentStyle === 'none') {
-          el.classList.remove('flash');
-          void el.offsetWidth;
-          el.classList.add('flash');
-          el.addEventListener('animationend', () => el.classList.remove('flash'), { once: true });
-        }
-      }
-    }
-
-    function onKeyUp(el) {
-      el.classList.remove('pressed');
-      if (onPressOnly && currentStyle !== 'none') {
-        const handler = () => {
-          ALL_ANIM_CLASSES.forEach(c => el.classList.remove(c));
-          el.style.animationDuration = '';
-          el.style.animationDelay    = '';
-          pendingStop.delete(el);
-        };
-        pendingStop.set(el, handler);
-        el.addEventListener('animationiteration', handler, { once: true });
-      }
-    }
-
-    // ── Toggles ──
-    const onPressTrack  = document.getElementById('onPressTrack');
-    const staggerToggle = document.getElementById('staggerToggle');
-    document.getElementById('onPressToggle').addEventListener('click', () => {
-      onPressOnly = !onPressOnly;
-      onPressTrack.classList.toggle('on', onPressOnly);
-      staggerToggle.classList.toggle('dimmed', onPressOnly);
-      applyStyleToKeys();
-    });
-
-    const staggerTrack = document.getElementById('staggerTrack');
-    document.getElementById('staggerToggle').addEventListener('click', () => {
-      staggerEnabled = !staggerEnabled;
-      staggerTrack.classList.toggle('on', staggerEnabled);
-      applyStyleToKeys();
-    });
-
-    // ── Sound picker pills ──
-    const soundPicker = document.getElementById('soundPicker');
-    SOUNDS.forEach(s => {
-      const pill = document.createElement('button');
-      pill.className = 'style-pill' + (s.id === currentSound ? ' active' : '');
-      pill.textContent = s.label;
-      pill.dataset.sound = s.id;
-      pill.addEventListener('click', () => {
-        currentSound = s.id;
-        soundPicker.querySelectorAll('.style-pill').forEach(p =>
-          p.classList.toggle('active', p.dataset.sound === s.id));
-        // preview the sound on selection
-        if (soundEnabled) playClick();
-      });
-      soundPicker.appendChild(pill);
-    });
-
-    // ── Sound toggle ──
-    const soundTrack = document.getElementById('soundTrack');
-    document.getElementById('soundToggle').addEventListener('click', () => {
-      soundEnabled = !soundEnabled;
-      soundTrack.classList.toggle('on', soundEnabled);
-    });
-
-    // ── Intensity slider ──
-    const intensitySlider = document.getElementById('intensitySlider');
-    const intensityVal    = document.getElementById('intensityVal');
-    intensitySlider.addEventListener('input', () => {
-      const v = intensitySlider.value / 100;
-      document.documentElement.style.setProperty('--intensity', v);
-      intensityVal.textContent = fmtMult(v);
-    });
-
-    // ── Speed slider ──
-    const speedSlider = document.getElementById('speedSlider');
-    const speedVal    = document.getElementById('speedVal');
-    function fmtMult(m) { return m.toFixed(2).replace(/\.?0+$/, '') + '×'; }
-    speedSlider.addEventListener('input', () => {
-      speedMult = speedSlider.value / 100;
-      speedVal.textContent = fmtMult(speedMult);
-      applyStyleToKeys();
-    });
-
-    // ── Cards ──
-    document.querySelectorAll('.card').forEach(card =>
-      card.addEventListener('click', () => selectStyle(card.dataset.anim)));
-
-    // ── Physical keyboard ──
+    // ─────────────────────────────────────────
+    //  Physical keyboard
+    // ─────────────────────────────────────────
     document.addEventListener('keydown', e => {
       if (e.repeat) return;
-      const k = e.key === ' ' ? 'Space' : e.key.toUpperCase();
+      const k  = e.key === ' ' ? 'Space' : e.key.toUpperCase();
       const el = kbRows.querySelector(`[data-key="${k}"]`);
       if (el) onKeyDown(el);
     });
     document.addEventListener('keyup', e => {
-      const k = e.key === ' ' ? 'Space' : e.key.toUpperCase();
+      const k  = e.key === ' ' ? 'Space' : e.key.toUpperCase();
       const el = kbRows.querySelector(`[data-key="${k}"]`);
       if (el) onKeyUp(el);
     });
   </script>
-
 </body>
 </html>
