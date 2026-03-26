@@ -628,6 +628,7 @@
     }
 
     function onKeyDown(el) {
+      if (navigator.vibrate) navigator.vibrate(8);
       if (onPressOnly && currentStyle !== 'none') {
         if (pendingStop.has(el)) {
           el.removeEventListener('animationiteration', pendingStop.get(el));
