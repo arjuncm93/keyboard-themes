@@ -410,6 +410,13 @@
     }
     .ikey.flash { animation: key-flash 0.5s ease-out forwards !important; }
 
+    /* ── Post-ikey cascade fixes ──
+       These animation classes are defined before .ikey so .ikey's border/shadow wins.
+       Re-declare them here so they take effect on interactive keys. ── */
+    .ikey.anim-glow   { border-color: var(--accent); }
+    .ikey.anim-ripple { border-color: var(--accent2); }
+    .ikey.anim-float  { box-shadow: 0 4px 0 1px #0a0a12, 0 6px 16px rgba(0,0,0,.5); }
+
     /* ── Tablet (600px+) ── */
     @media (min-width: 600px) {
       :root {
