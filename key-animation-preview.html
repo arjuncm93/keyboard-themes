@@ -500,10 +500,10 @@
 
     <div class="controls">
       <label class="toggle-label" id="onPressToggle">
-        <div class="toggle-track" id="onPressTrack"><div class="toggle-thumb"></div></div>
+        <div class="toggle-track on" id="onPressTrack"><div class="toggle-thumb"></div></div>
         On press
       </label>
-      <label class="toggle-label" id="staggerToggle">
+      <label class="toggle-label dimmed" id="staggerToggle">
         <div class="toggle-track on" id="staggerTrack"><div class="toggle-thumb"></div></div>
         Stagger
       </label>
@@ -552,7 +552,7 @@
 
     let currentStyle   = 'none';
     let staggerEnabled = true;
-    let onPressOnly    = false;
+    let onPressOnly    = true;
     let speedMult      = 1;
     const pendingStop  = new WeakMap();
 
