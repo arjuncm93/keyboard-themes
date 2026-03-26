@@ -514,10 +514,19 @@
         <div class="toggle-track on" id="staggerTrack"><div class="toggle-thumb"></div></div>
         Stagger
       </label>
+      <label class="toggle-label" id="soundToggle">
+        <div class="toggle-track on" id="soundTrack"><div class="toggle-thumb"></div></div>
+        Sound
+      </label>
       <div class="slider-row">
         <label>Speed</label>
         <input type="range" id="speedSlider" min="25" max="300" value="100" step="5">
         <span class="slider-val" id="speedVal">1×</span>
+      </div>
+      <div class="slider-row">
+        <label>Volume</label>
+        <input type="range" id="volumeSlider" min="0" max="100" value="60" step="5">
+        <span class="slider-val" id="volumeVal">60%</span>
       </div>
     </div>
 
@@ -561,7 +570,57 @@
     let staggerEnabled = true;
     let onPressOnly    = true;
     let speedMult      = 1;
+    let soundEnabled   = true;
+    let soundVolume    = 0.6;
+    let audioCtx       = null;
     const pendingStop  = new WeakMap();
+
+    // ── Audio ──
+    function playClick() {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const t = audioCtx.currentTime;
+
+        // Noise burst — the "click" body
+        const len = Math.floor(audioCtx.sampleRate * 0.035);
+        const buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+        const d   = buf.getChannelData(0);
+        for (let i = 0; i < len; i++) {
+          d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 5);
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buf;
+
+        // Shape the noise: bandpass around 3 kHz for a crisp click
+        const bp = audioCtx.createBiquadFilter();
+        bp.type = 'bandpass';
+        bp.frequency.value = 3000;
+        bp.Q.value = 0.6;
+
+        // Short tone transient underneath for body
+        const osc  = audioCtx.createOscillator();
+        osc.type   = 'sine';
+        osc.frequency.setValueAtTime(180, t);
+        osc.frequency.exponentialRampToValueAtTime(80, t + 0.025);
+
+        const oscGain = audioCtx.createGain();
+        oscGain.gain.setValueAtTime(0.18 * soundVolume, t);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+
+        const noiseGain = audioCtx.createGain();
+        noiseGain.gain.setValueAtTime(0.4 * soundVolume, t);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
+
+        noise.connect(bp); bp.connect(noiseGain); noiseGain.connect(audioCtx.destination);
+        osc.connect(oscGain); oscGain.connect(audioCtx.destination);
+
+        noise.start(t); noise.stop(t + 0.04);
+        osc.start(t);   osc.stop(t + 0.04);
+      } catch(e) {}
+    }
 
     // ── Pills ──
     const picker = document.getElementById('stylePicker');
@@ -629,6 +688,7 @@
 
     function onKeyDown(el) {
       if (navigator.vibrate) navigator.vibrate(8);
+      playClick();
       if (onPressOnly && currentStyle !== 'none') {
         if (pendingStop.has(el)) {
           el.removeEventListener('animationiteration', pendingStop.get(el));
@@ -678,6 +738,21 @@
       staggerEnabled = !staggerEnabled;
       staggerTrack.classList.toggle('on', staggerEnabled);
       applyStyleToKeys();
+    });
+
+    // ── Sound toggle ──
+    const soundTrack = document.getElementById('soundTrack');
+    document.getElementById('soundToggle').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundTrack.classList.toggle('on', soundEnabled);
+    });
+
+    // ── Volume slider ──
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeVal    = document.getElementById('volumeVal');
+    volumeSlider.addEventListener('input', () => {
+      soundVolume = volumeSlider.value / 100;
+      volumeVal.textContent = volumeSlider.value + '%';
     });
 
     // ── Speed slider ──
