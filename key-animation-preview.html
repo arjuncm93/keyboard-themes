@@ -53,6 +53,16 @@
       margin-bottom: 10px;
     }
 
+    /* ── Category label ── */
+    .category-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin: 12px 0 6px;
+      padding-left: 2px;
+    }
+
     /* ── Compact style cards grid ── */
     .grid {
       display: grid;
@@ -454,6 +464,8 @@
   <!-- Scrollable top: style cards -->
   <div class="top-area">
     <h1>Key Animations</h1>
+
+    <div class="category-label">Motion</div>
     <div class="grid" id="cardGrid">
       <div class="card" data-anim="anim-press">
         <div class="key anim-press">A</div>
@@ -463,21 +475,9 @@
         <div class="key anim-bounce">B</div>
         <span class="card-label">Bounce</span>
       </div>
-      <div class="card" data-anim="anim-glow">
-        <div class="key anim-glow">G</div>
-        <span class="card-label">Glow</span>
-      </div>
-      <div class="card" data-anim="anim-rgb">
-        <div class="key anim-rgb">R</div>
-        <span class="card-label">RGB</span>
-      </div>
       <div class="card" data-anim="anim-wobble">
         <div class="key anim-wobble">W</div>
         <span class="card-label">Wobble</span>
-      </div>
-      <div class="card" data-anim="anim-flip">
-        <div class="key anim-flip">F</div>
-        <span class="card-label">Flip</span>
       </div>
       <div class="card" data-anim="anim-shake">
         <div class="key anim-shake">!</div>
@@ -487,19 +487,40 @@
         <div class="key anim-float">↑</div>
         <span class="card-label">Float</span>
       </div>
-      <div class="card" data-anim="anim-ripple">
-        <div class="key anim-ripple" style="border-color:var(--accent2)">◎</div>
-        <span class="card-label">Ripple</span>
+      <div class="card" data-anim="anim-flip">
+        <div class="key anim-flip">F</div>
+        <span class="card-label">Flip</span>
+      </div>
+    </div>
+
+    <div class="category-label">Light</div>
+    <div class="grid">
+      <div class="card" data-anim="anim-glow">
+        <div class="key anim-glow">G</div>
+        <span class="card-label">Glow</span>
+      </div>
+      <div class="card" data-anim="anim-rgb">
+        <div class="key anim-rgb">R</div>
+        <span class="card-label">RGB</span>
       </div>
       <div class="card" data-anim="anim-flicker">
         <div class="key anim-flicker">N</div>
         <span class="card-label">Flicker</span>
+      </div>
+    </div>
+
+    <div class="category-label">Effect</div>
+    <div class="grid">
+      <div class="card" data-anim="anim-ripple">
+        <div class="key anim-ripple" style="border-color:var(--accent2)">◎</div>
+        <span class="card-label">Ripple</span>
       </div>
       <div class="card" data-anim="anim-pop">
         <div class="key anim-pop">★</div>
         <span class="card-label">Pop</span>
       </div>
     </div>
+
   </div>
 
   <!-- Pinned bottom: keyboard -->
@@ -766,7 +787,7 @@
     });
 
     // ── Cards ──
-    document.getElementById('cardGrid').querySelectorAll('.card').forEach(card =>
+    document.querySelectorAll('.card').forEach(card =>
       card.addEventListener('click', () => selectStyle(card.dataset.anim)));
 
     // ── Physical keyboard ──
