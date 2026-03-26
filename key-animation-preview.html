@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Keyboard Key Animation Preview</title>
+  <style>
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --border: #2e2e3e;
+      --text: #e0e0f0;
+      --muted: #6b6b8a;
+      --accent: #7c6aff;
+      --accent2: #ff6ab0;
+      --accent3: #6affb4;
+      --key-size: calc((100vw - 28px) / 10 - 4px);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      padding: 20px 12px env(safe-area-inset-bottom);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    h1 {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.72rem;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* ── Cards grid — 2 col on mobile ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 0;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 10px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .card:active { background: #1f1f2e; }
+
+    .card.active {
+      border-color: var(--accent);
+      background: #201e3a;
+      box-shadow: 0 0 0 1px var(--accent), 0 0 16px 3px rgba(124,106,255,.2);
+    }
+
+    .card-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      align-self: flex-start;
+    }
+
+    .card.active .card-label { color: var(--accent); }
+
+    /* ── Preview key ── */
+    .key {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 9px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: default;
+      user-select: none;
+      position: relative;
+      background: #23233a;
+      color: #c8c8e8;
+      border: 2px solid #3a3a55;
+      box-shadow: 0 4px 0 #13132a, 0 6px 12px rgba(0,0,0,0.5);
+    }
+
+    /* ── Animations ── */
+    @keyframes press {
+      0%   { transform: translateY(0);   box-shadow: 0 4px 0 #13132a, 0 6px 12px rgba(0,0,0,.5); }
+      40%  { transform: translateY(4px); box-shadow: 0 0px 0 #13132a, 0 2px 6px rgba(0,0,0,.4); }
+      100% { transform: translateY(0);   box-shadow: 0 4px 0 #13132a, 0 6px 12px rgba(0,0,0,.5); }
+    }
+    .anim-press { animation: press 0.9s ease-in-out infinite; }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0) scaleY(1); }
+      30%       { transform: translateY(-14px) scaleY(1.05); }
+      55%       { transform: translateY(4px) scaleY(0.94); }
+      70%       { transform: translateY(-6px) scaleY(1.02); }
+      85%       { transform: translateY(2px) scaleY(0.98); }
+    }
+    .anim-bounce { animation: bounce 1.4s cubic-bezier(.36,.07,.19,.97) infinite; }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 4px 0 #13132a, 0 0 8px 2px rgba(124,106,255,0.2); }
+      50%       { box-shadow: 0 4px 0 #13132a, 0 0 24px 8px rgba(124,106,255,0.7), 0 0 48px 16px rgba(124,106,255,0.25); }
+    }
+    .anim-glow { border-color: var(--accent); animation: glow 1.6s ease-in-out infinite; }
+
+    @keyframes rgb {
+      0%   { border-color: #ff4444; box-shadow: 0 4px 0 #13132a, 0 0 12px 4px rgba(255,68,68,.5);   color: #ff8888; }
+      25%  { border-color: #ffcc00; box-shadow: 0 4px 0 #13132a, 0 0 12px 4px rgba(255,204,0,.5);   color: #ffe066; }
+      50%  { border-color: #44ff88; box-shadow: 0 4px 0 #13132a, 0 0 12px 4px rgba(68,255,136,.5);  color: #88ffbb; }
+      75%  { border-color: #44aaff; box-shadow: 0 4px 0 #13132a, 0 0 12px 4px rgba(68,170,255,.5);  color: #88ccff; }
+      100% { border-color: #ff44aa; box-shadow: 0 4px 0 #13132a, 0 0 12px 4px rgba(255,68,170,.5);  color: #ff88cc; }
+    }
+    .anim-rgb { animation: rgb 2.4s linear infinite; }
+
+    @keyframes wobble {
+      0%,100% { transform: rotate(0deg); }
+      15%     { transform: rotate(-8deg); }
+      30%     { transform: rotate(7deg); }
+      45%     { transform: rotate(-5deg); }
+      60%     { transform: rotate(4deg); }
+      75%     { transform: rotate(-2deg); }
+    }
+    .anim-wobble { animation: wobble 1.2s ease-in-out infinite; }
+
+    @keyframes flip {
+      0%,100% { transform: rotateY(0deg); }
+      40%     { transform: rotateY(180deg); }
+      60%     { transform: rotateY(180deg); }
+    }
+    .anim-flip { animation: flip 2s ease-in-out infinite; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-5px); }
+      40%     { transform: translateX(5px); }
+      60%     { transform: translateX(-4px); }
+      80%     { transform: translateX(4px); }
+    }
+    .anim-shake { animation: shake 0.7s ease-in-out infinite; }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(-10px); }
+    }
+    .anim-float { animation: float 2s ease-in-out infinite; box-shadow: 0 8px 0 #13132a, 0 12px 24px rgba(0,0,0,.6); }
+
+    @keyframes ripple-ring {
+      0%   { opacity: 0.8; transform: scale(0.6); }
+      100% { opacity: 0;   transform: scale(2.2); }
+    }
+    .anim-ripple::before, .anim-ripple::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 2px solid var(--accent2);
+      pointer-events: none;
+      animation: ripple-ring 0.65s ease-out infinite;
+    }
+    .anim-ripple { border-color: var(--accent2); }
+    .anim-ripple::after { animation-delay: 0.325s; }
+
+    @keyframes flicker {
+      0%,19%,21%,23%,25%,54%,56%,100% {
+        box-shadow: 0 4px 0 #13132a, 0 0 10px 3px rgba(106,255,180,.6), 0 0 30px 8px rgba(106,255,180,.25);
+        border-color: var(--accent3); color: var(--accent3);
+      }
+      20%,24%,55% { box-shadow: 0 4px 0 #13132a; border-color: #3a3a55; color: #c8c8e8; }
+    }
+    .anim-flicker { animation: flicker 3s linear infinite; }
+
+    @keyframes pop {
+      0%,100% { transform: scale(1); }
+      50%     { transform: scale(1.25); }
+    }
+    .anim-pop { animation: pop 0.8s cubic-bezier(.36,.07,.19,.97) infinite; }
+
+    /* letter-cycle card only */
+    .key-type { font-family: monospace; }
+    .key-type .l1 { animation: fadecycle1 3s steps(1) infinite; position: absolute; }
+    .key-type .l2 { animation: fadecycle2 3s steps(1) infinite; position: absolute; }
+    .key-type .l3 { animation: fadecycle3 3s steps(1) infinite; position: absolute; }
+    @keyframes fadecycle1 { 0%,30%{opacity:1} 34%,100%{opacity:0} }
+    @keyframes fadecycle2 { 0%,33%{opacity:0} 34%,63%{opacity:1} 67%,100%{opacity:0} }
+    @keyframes fadecycle3 { 0%,66%{opacity:0} 67%,96%{opacity:1} 100%{opacity:0} }
+
+    /* ── Interactive section ── */
+    .interactive-section {
+      margin: 16px 0 0;
+      padding: 14px 10px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    /* Header row: title left, toggles right */
+    .interactive-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .interactive-header h2 {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    /* Toggles — stacked on mobile */
+    .toggles {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.68rem;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.2s;
+    }
+    .toggle-label.dimmed { opacity: 0.35; pointer-events: none; }
+
+    .toggle-track {
+      width: 32px;
+      height: 18px;
+      border-radius: 999px;
+      background: var(--border);
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .toggle-track.on { background: var(--accent); }
+    .toggle-thumb {
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform 0.2s;
+    }
+    .toggle-track.on .toggle-thumb { transform: translateX(14px); }
+
+    /* Speed slider */
+    .sliders { margin-bottom: 12px; }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slider-row label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      white-space: nowrap;
+      min-width: 44px;
+    }
+
+    .slider-row input[type=range] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      outline: none;
+      cursor: pointer;
+    }
+    .slider-row input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: 0 0 6px 2px rgba(124,106,255,.4);
+    }
+    .slider-row input[type=range]::-moz-range-thumb {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: none;
+    }
+
+    .slider-val {
+      font-size: 0.68rem;
+      color: var(--accent);
+      min-width: 30px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Style picker — horizontal scroll on mobile */
+    .style-picker {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+      margin-bottom: 14px;
+    }
+    .style-picker::-webkit-scrollbar { display: none; }
+
+    .style-pill {
+      flex-shrink: 0;
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color 0.12s, color 0.12s, background 0.12s;
+      /* min touch target */
+      min-height: 34px;
+      display: flex;
+      align-items: center;
+    }
+
+    .style-pill.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(124,106,255,0.12);
+    }
+
+    .style-pill.none-pill.active {
+      border-color: var(--muted);
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* ── Keyboard rows ── */
+    .kb-rows {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .kb-row {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+    }
+
+    /* Key size fluid on mobile: fits 10 keys in viewport */
+    .ikey {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--key-size);
+      height: var(--key-size);
+      min-width: 0;
+      padding: 0;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      overflow: visible;
+      z-index: 1;
+      background: #23233a;
+      color: #c8c8e8;
+      border: 1.5px solid #3a3a55;
+      box-shadow: 0 2px 0 #13132a;
+      transition: transform 0.08s, box-shadow 0.08s, background 0.08s, border-color 0.08s;
+      touch-action: manipulation;
+    }
+
+    .ikey.space-key {
+      width: calc(var(--key-size) * 4 + 12px);
+      font-size: 0.6rem;
+    }
+
+    .ikey.anim-ripple { z-index: 0; }
+
+    .ikey.pressed {
+      transform: translateY(2px) !important;
+      box-shadow: 0 0px 0 #13132a !important;
+      background: #2d2d4a;
+    }
+
+    @keyframes key-flash {
+      0%   { background: #2d2d4a; border-color: var(--accent); box-shadow: 0 2px 0 #13132a, 0 0 12px 3px rgba(124,106,255,.5); }
+      100% { background: #23233a; border-color: #3a3a55;       box-shadow: 0 2px 0 #13132a; }
+    }
+    .ikey.flash { animation: key-flash 0.5s ease-out forwards !important; }
+
+    footer {
+      text-align: center;
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Tablet (600px+) ── */
+    @media (min-width: 600px) {
+      :root { --key-size: min(calc((100vw - 60px) / 10 - 5px), 48px); }
+
+      body { padding: 28px 20px; }
+      h1   { font-size: 1.35rem; }
+      .subtitle { font-size: 0.8rem; margin-bottom: 28px; }
+
+      .grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+      .card { padding: 16px 14px 12px; gap: 12px; }
+      .card-label { font-size: 0.7rem; }
+      .key { width: 52px; height: 52px; font-size: 1.1rem; }
+
+      .interactive-section { padding: 20px 16px 24px; margin-top: 24px; }
+      .interactive-header h2 { font-size: 0.75rem; }
+      .toggle-label { font-size: 0.72rem; }
+      .toggles { flex-direction: row; align-items: center; gap: 14px; }
+
+      .slider-row label { font-size: 0.72rem; min-width: 52px; }
+      .slider-row input[type=range]::-webkit-slider-thumb { width: 16px; height: 16px; }
+      .slider-row input[type=range]::-moz-range-thumb    { width: 16px; height: 16px; }
+
+      .ikey { border-radius: 8px; font-size: 0.82rem; border-width: 2px; box-shadow: 0 3px 0 #13132a; }
+      .ikey.space-key { width: calc(var(--key-size) * 5 + 20px); }
+
+      .style-picker { flex-wrap: wrap; overflow-x: visible; }
+      .style-pill { font-size: 0.74rem; }
+    }
+
+    /* ── Desktop (960px+) ── */
+    @media (min-width: 960px) {
+      :root { --key-size: 48px; }
+
+      body { padding: 40px 24px; }
+      h1   { font-size: 1.6rem; }
+      .subtitle { font-size: 0.85rem; margin-bottom: 40px; }
+
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .card { padding: 20px 16px 16px; border-radius: 14px; }
+      .card-label { font-size: 0.72rem; }
+      .key { width: 60px; height: 60px; border-radius: 12px; font-size: 1.3rem; }
+
+      .interactive-section { max-width: 1100px; margin: 40px auto 0; padding: 24px 24px 32px; border-radius: 20px; }
+      .toggle-label { font-size: 0.75rem; }
+
+      .ikey { border-radius: 10px; font-size: 0.9rem; }
+      .ikey.space-key { width: calc(var(--key-size) * 5 + 24px); }
+
+      .card:hover { border-color: var(--accent); background: #1f1f2e; transform: translateY(-2px); }
+      .style-pill:hover { border-color: var(--accent); color: var(--text); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Key Animation Preview</h1>
+  <p class="subtitle">Tap a style card or pick from the pills below</p>
+
+  <!-- Preview cards -->
+  <div class="grid" id="cardGrid">
+    <div class="card" data-anim="anim-press">
+      <span class="card-label">Press</span>
+      <div class="key anim-press">A</div>
+    </div>
+    <div class="card" data-anim="anim-bounce">
+      <span class="card-label">Bounce</span>
+      <div class="key anim-bounce">B</div>
+    </div>
+    <div class="card" data-anim="anim-glow">
+      <span class="card-label">Glow Pulse</span>
+      <div class="key anim-glow">G</div>
+    </div>
+    <div class="card" data-anim="anim-rgb">
+      <span class="card-label">RGB Cycle</span>
+      <div class="key anim-rgb">R</div>
+    </div>
+    <div class="card" data-anim="anim-wobble">
+      <span class="card-label">Wobble</span>
+      <div class="key anim-wobble">W</div>
+    </div>
+    <div class="card" data-anim="anim-flip">
+      <span class="card-label">Flip</span>
+      <div class="key anim-flip">F</div>
+    </div>
+    <div class="card" data-anim="anim-shake">
+      <span class="card-label">Shake</span>
+      <div class="key anim-shake">!</div>
+    </div>
+    <div class="card" data-anim="anim-float">
+      <span class="card-label">Float</span>
+      <div class="key anim-float">↑</div>
+    </div>
+    <div class="card" data-anim="anim-ripple">
+      <span class="card-label">Ripple</span>
+      <div class="key anim-ripple" style="border-color:var(--accent2)">◎</div>
+    </div>
+    <div class="card" data-anim="anim-flicker">
+      <span class="card-label">Neon Flicker</span>
+      <div class="key anim-flicker">N</div>
+    </div>
+    <div class="card" data-anim="anim-pop">
+      <span class="card-label">Pop Scale</span>
+      <div class="key anim-pop">★</div>
+    </div>
+  </div>
+
+  <!-- Interactive keyboard -->
+  <section class="interactive-section">
+
+    <div class="interactive-header">
+      <h2>Interactive Keyboard</h2>
+      <div class="toggles">
+        <label class="toggle-label" id="onPressToggle">
+          <div class="toggle-track" id="onPressTrack"><div class="toggle-thumb"></div></div>
+          On press
+        </label>
+        <label class="toggle-label" id="staggerToggle">
+          <div class="toggle-track on" id="staggerTrack"><div class="toggle-thumb"></div></div>
+          Stagger
+        </label>
+      </div>
+    </div>
+
+    <div class="sliders">
+      <div class="slider-row">
+        <label>Speed</label>
+        <input type="range" id="speedSlider" min="25" max="300" value="100" step="5">
+        <span class="slider-val" id="speedVal">1×</span>
+      </div>
+    </div>
+
+    <div class="style-picker" id="stylePicker"></div>
+    <div class="kb-rows" id="kbRows"></div>
+
+  </section>
+
+  <footer>Keyboard Theme Preview &bull; CSS animations</footer>
+
+  <script>
+    const STYLES = [
+      { id: 'none',         label: 'None' },
+      { id: 'anim-press',   label: 'Press' },
+      { id: 'anim-bounce',  label: 'Bounce' },
+      { id: 'anim-glow',    label: 'Glow' },
+      { id: 'anim-rgb',     label: 'RGB' },
+      { id: 'anim-wobble',  label: 'Wobble' },
+      { id: 'anim-flip',    label: 'Flip' },
+      { id: 'anim-shake',   label: 'Shake' },
+      { id: 'anim-float',   label: 'Float' },
+      { id: 'anim-ripple',  label: 'Ripple' },
+      { id: 'anim-flicker', label: 'Flicker' },
+      { id: 'anim-pop',     label: 'Pop' },
+    ];
+
+    const ALL_ANIM_CLASSES = STYLES.filter(s => s.id !== 'none').map(s => s.id);
+
+    const ROWS = [
+      ['Q','W','E','R','T','Y','U','I','O','P'],
+      ['A','S','D','F','G','H','J','K','L'],
+      ['Z','X','C','V','B','N','M'],
+      ['Space'],
+    ];
+
+    const BASE_DUR = {
+      'anim-press':0.9,'anim-bounce':1.4,'anim-glow':1.6,'anim-rgb':2.4,
+      'anim-wobble':1.2,'anim-flip':2.0,'anim-shake':0.7,'anim-float':2.0,
+      'anim-ripple':0.65,'anim-flicker':3.0,'anim-pop':0.8,
+    };
+
+    let currentStyle  = 'none';
+    let staggerEnabled = true;
+    let onPressOnly    = false;
+    let speedMult      = 1;
+    const pendingStop  = new WeakMap();
+
+    // ── Build style pills ──
+    const picker = document.getElementById('stylePicker');
+    STYLES.forEach(s => {
+      const pill = document.createElement('button');
+      pill.className = 'style-pill' + (s.id === 'none' ? ' none-pill' : '') + (s.id === 'none' ? ' active' : '');
+      pill.textContent = s.label;
+      pill.dataset.style = s.id;
+      pill.addEventListener('click', () => selectStyle(s.id));
+      picker.appendChild(pill);
+    });
+
+    // ── Build keyboard ──
+    const kbRows = document.getElementById('kbRows');
+    let keyIndex = 0;
+
+    ROWS.forEach(row => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'kb-row';
+      row.forEach(k => {
+        const el = document.createElement('button');
+        el.className = 'ikey' + (k === 'Space' ? ' space-key' : '');
+        el.textContent = k === 'Space' ? '⎵' : k;
+        el.dataset.key = k;
+        el.dataset.index = keyIndex++;
+
+        // Mouse
+        el.addEventListener('mousedown', () => onKeyDown(el));
+        el.addEventListener('mouseup',   () => onKeyUp(el));
+        el.addEventListener('mouseleave',() => onKeyUp(el));
+
+        // Touch
+        el.addEventListener('touchstart', e => { e.preventDefault(); onKeyDown(el); }, { passive: false });
+        el.addEventListener('touchend',   e => { e.preventDefault(); onKeyUp(el); },   { passive: false });
+        el.addEventListener('touchcancel',() => onKeyUp(el));
+
+        rowEl.appendChild(el);
+      });
+      kbRows.appendChild(rowEl);
+    });
+
+    // ── Style application ──
+    function setKeyAnimStyle(el, animClass, staggerIdx) {
+      el.style.animationDuration = '';
+      el.style.animationDelay    = '';
+      if (!animClass || animClass === 'none') return;
+      const dur = (BASE_DUR[animClass] ?? 1) / speedMult;
+      el.style.animationDuration = dur.toFixed(3) + 's';
+      if (staggerIdx != null && staggerEnabled) {
+        el.style.animationDelay = (staggerIdx * 0.06 / speedMult).toFixed(3) + 's';
+      }
+    }
+
+    function applyStyleToKeys() {
+      document.querySelectorAll('.ikey').forEach(el => {
+        ALL_ANIM_CLASSES.forEach(c => el.classList.remove(c));
+        el.style.animationDuration = '';
+        el.style.animationDelay    = '';
+        if (onPressOnly || currentStyle === 'none') return;
+        el.classList.add(currentStyle);
+        setKeyAnimStyle(el, currentStyle, parseInt(el.dataset.index));
+      });
+    }
+
+    function selectStyle(styleId) {
+      currentStyle = styleId;
+      picker.querySelectorAll('.style-pill').forEach(p =>
+        p.classList.toggle('active', p.dataset.style === styleId));
+      document.querySelectorAll('.card').forEach(c =>
+        c.classList.toggle('active', c.dataset.anim === styleId));
+      applyStyleToKeys();
+    }
+
+    // ── Key press ──
+    function onKeyDown(el) {
+      if (onPressOnly && currentStyle !== 'none') {
+        if (pendingStop.has(el)) {
+          el.removeEventListener('animationiteration', pendingStop.get(el));
+          pendingStop.delete(el);
+        }
+        ALL_ANIM_CLASSES.forEach(c => el.classList.remove(c));
+        void el.offsetWidth;
+        el.classList.add(currentStyle);
+        setKeyAnimStyle(el, currentStyle, null);
+      } else {
+        el.classList.add('pressed');
+        if (currentStyle === 'none') {
+          el.classList.remove('flash');
+          void el.offsetWidth;
+          el.classList.add('flash');
+          el.addEventListener('animationend', () => el.classList.remove('flash'), { once: true });
+        }
+      }
+    }
+
+    function onKeyUp(el) {
+      el.classList.remove('pressed');
+      if (onPressOnly && currentStyle !== 'none') {
+        const handler = () => {
+          ALL_ANIM_CLASSES.forEach(c => el.classList.remove(c));
+          el.style.animationDuration = '';
+          el.style.animationDelay    = '';
+          pendingStop.delete(el);
+        };
+        pendingStop.set(el, handler);
+        el.addEventListener('animationiteration', handler, { once: true });
+      }
+    }
+
+    // ── Card click ──
+    document.getElementById('cardGrid').querySelectorAll('.card').forEach(card =>
+      card.addEventListener('click', () => selectStyle(card.dataset.anim)));
+
+    // ── On-press toggle ──
+    const onPressTrack  = document.getElementById('onPressTrack');
+    const staggerToggle = document.getElementById('staggerToggle');
+    document.getElementById('onPressToggle').addEventListener('click', () => {
+      onPressOnly = !onPressOnly;
+      onPressTrack.classList.toggle('on', onPressOnly);
+      staggerToggle.classList.toggle('dimmed', onPressOnly);
+      applyStyleToKeys();
+    });
+
+    // ── Stagger toggle ──
+    const staggerTrack = document.getElementById('staggerTrack');
+    document.getElementById('staggerToggle').addEventListener('click', () => {
+      staggerEnabled = !staggerEnabled;
+      staggerTrack.classList.toggle('on', staggerEnabled);
+      applyStyleToKeys();
+    });
+
+    // ── Speed slider ──
+    const speedSlider = document.getElementById('speedSlider');
+    const speedVal    = document.getElementById('speedVal');
+    function fmtMult(m) { return m.toFixed(2).replace(/\.?0+$/, '') + '×'; }
+    speedSlider.addEventListener('input', () => {
+      speedMult = speedSlider.value / 100;
+      speedVal.textContent = fmtMult(speedMult);
+      applyStyleToKeys();
+    });
+
+    // ── Physical keyboard ──
+    document.addEventListener('keydown', e => {
+      if (e.repeat) return;
+      const k = e.key === ' ' ? 'Space' : e.key.toUpperCase();
+      const el = kbRows.querySelector(`[data-key="${k}"]`);
+      if (el) onKeyDown(el);
+    });
+    document.addEventListener('keyup', e => {
+      const k = e.key === ' ' ? 'Space' : e.key.toUpperCase();
+      const el = kbRows.querySelector(`[data-key="${k}"]`);
+      if (el) onKeyUp(el);
+    });
+  </script>
+
+</body>
+</html>
