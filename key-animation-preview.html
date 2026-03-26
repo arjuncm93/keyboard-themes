@@ -353,14 +353,15 @@
       flex-direction: column;
       align-items: center;
       gap: var(--key-gap);
+      width: 100%;
     }
     .kb-row {
       display: flex;
       gap: var(--key-gap);
       justify-content: center;
-      width: 100%;
-      padding: 0;
     }
+    /* Space row fills full width */
+    .kb-row:last-child { width: calc(10 * var(--key-w) + 9 * var(--key-gap)); }
 
     .ikey {
       display: inline-flex;
@@ -572,19 +573,12 @@
     ROWS.forEach((row, rowIdx) => {
       const rowEl = document.createElement('div');
       rowEl.className = 'kb-row';
-      // Rows with fewer than 10 keys: stretch keys to fill width via flex
-      if (rowIdx === 1 || rowIdx === 2) rowEl.style.cssText = 'justify-content:center;';
-
       row.forEach(k => {
         const el = document.createElement('button');
         el.className = 'ikey' + (k === 'Space' ? ' space-key' : '');
         el.textContent = k === 'Space' ? '⎵' : k.toLowerCase();
         el.dataset.key = k;
         el.dataset.index = keyIndex++;
-        // Rows 2 & 3: make keys slightly wider to match 10-key total width
-        if (rowIdx === 1) el.style.width = 'calc((100vw - 16px - 8 * var(--key-gap)) / 9)';
-        if (rowIdx === 2) el.style.width = 'calc((100vw - 16px - 6 * var(--key-gap)) / 7)';
-
         el.addEventListener('mousedown', () => onKeyDown(el));
         el.addEventListener('mouseup',   () => onKeyUp(el));
         el.addEventListener('mouseleave',() => onKeyUp(el));
